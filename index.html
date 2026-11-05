@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Research &amp; Speak · Ana</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF7F0;--card:#FFFFFF;--ink:#24222B;--muted:#6B6672;--line:#E8E1D4;--soft:#F4EEE3;
+  --accent:#E5735A;--ok:#2F8F6B;--okbg:#E3F3EC;--warn:#C2552F;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Manrope,system-ui,sans-serif;font-size:16px;line-height:1.55}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 16px 90px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:700;line-height:1.15;margin:0}
+h1{font-size:clamp(30px,6vw,46px);letter-spacing:-.5px}
+h2{font-size:clamp(24px,4.5vw,32px)}
+h3{font-size:20px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.sub{color:var(--muted);margin:8px 0 0;max-width:640px}
+header{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.stamp{border:2px dashed var(--accent);color:var(--accent);border-radius:10px;padding:8px 12px;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transform:rotate(-3deg)}
+
+/* steps nav */
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:26px 0 22px}
+.step-btn{all:unset;cursor:pointer;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;transition:.15s}
+.step-btn .n{font-family:Fraunces,serif;font-weight:700;font-size:18px;color:var(--muted)}
+.step-btn .l{font-weight:700;font-size:13px}
+.step-btn .t{font-size:12px;color:var(--muted)}
+.step-btn:hover{border-color:var(--ink)}
+.step-btn.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.step-btn.on .n,.step-btn.on .t{color:#FFD9CF}
+.step-btn.done .n::after{content:" ✓";color:var(--ok)}
+@media(max-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
+
+.panel{display:none}
+.panel.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+
+/* task box */
+.task{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px 20px;margin-bottom:18px}
+.task ol{margin:8px 0 0;padding-left:0;list-style:none;counter-reset:i;display:grid;gap:8px}
+.task li{counter-increment:i;display:flex;gap:10px;align-items:flex-start}
+.task li::before{content:counter(i);flex:0 0 26px;height:26px;border-radius:50%;background:var(--soft);font-weight:800;font-size:13px;display:grid;place-items:center;margin-top:-1px}
+.goal{display:inline-block;background:#FFE7DF;color:var(--warn);font-weight:800;font-size:12px;padding:2px 8px;border-radius:99px;margin-left:4px;white-space:nowrap}
+
+/* topics */
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.topic{background:var(--card);border:1.5px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:.15s}
+.topic:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(36,34,43,.08)}
+.topic .band{height:8px;background:var(--c)}
+.topic .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.topic .num{font-family:Fraunces,serif;font-size:14px;font-weight:700;color:var(--c)}
+.topic p{margin:0;color:var(--muted);font-size:14.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;font-weight:600;background:var(--soft);border-radius:99px;padding:4px 10px}
+.topic button{margin-top:auto}
+.topic.sel{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 25%,transparent)}
+
+.btn{all:unset;cursor:pointer;text-align:center;font-weight:800;font-size:14px;padding:10px 16px;border-radius:12px;background:var(--ink);color:#fff;transition:.15s}
+.btn:hover{opacity:.88}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.soft{background:var(--soft);color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.next{display:flex;justify-content:flex-end;margin-top:22px}
+
+/* timer */
+.timer{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:14px 16px;min-width:230px;text-align:center}
+.timer .lbl{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.timer .digits{font-family:Fraunces,serif;font-size:46px;font-weight:700;letter-spacing:1px;font-variant-numeric:tabular-nums;line-height:1.1;margin:4px 0 8px}
+.timer .row{justify-content:center}
+.timer .btn{padding:7px 12px;font-size:13px}
+.timer.end{border-color:var(--accent);animation:pulse 1s ease 3}
+.timer.end .digits{color:var(--accent)}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #FFE0D6}}
+
+/* layout blocks */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px 20px}
+.card h3{margin-bottom:10px}
+.mini{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+.qs{margin:0;padding-left:20px;display:grid;gap:6px}
+.search{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--soft);border-radius:8px;padding:3px 8px;margin:2px 4px 2px 0}
+.expr{border-top:1px solid var(--line);padding:10px 0}
+.expr:first-of-type{border-top:0}
+.expr b{font-size:15.5px}
+.expr .m{color:var(--muted);font-size:14px}
+.expr .ex{font-size:14px;font-style:italic;margin-top:2px}
+textarea,input[type=text]{width:100%;font:inherit;color:var(--ink);background:#FFFDF9;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;outline:none;transition:.15s}
+textarea:focus,input[type=text]:focus{border-color:var(--ink)}
+textarea{resize:vertical;min-height:140px;line-height:1.6}
+.meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:6px}
+.meta .good{color:var(--ok);font-weight:800}
+
+/* expression tracker */
+.tracker{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);padding:10px 0;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.tracker .chips{gap:8px}
+.tchip{font-size:13px;font-weight:700;border:1.5px solid var(--line);background:var(--card);border-radius:99px;padding:5px 12px;cursor:default;transition:.15s}
+.tchip.hit{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.tchip.hit::before{content:"✓ "}
+button.tchip{cursor:pointer;font-family:inherit}
+.topicline{font-size:13px;color:var(--muted);margin-bottom:6px}
+.topicline b{color:var(--ink)}
+
+.readtext{background:#FFFDF9;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;white-space:pre-wrap;line-height:1.7}
+mark{background:#D7F0E4;color:inherit;border-radius:4px;padding:0 2px}
+.lens{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.lens li{display:flex;gap:10px;font-size:14.5px}
+.lens li::before{content:"◎";color:var(--accent);font-weight:800}
+.imp{display:grid;gap:8px}
+.imp label{font-size:13px;font-weight:700}
+.tag{display:inline-block;font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:#fff;border-radius:8px;padding:3px 9px;margin-bottom:8px}
+
+.cue{display:grid;gap:8px}
+.cue .r{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}
+.cue .r span{font-size:13px;font-weight:800;color:var(--muted)}
+@media(max-width:560px){.cue .r{grid-template-columns:1fr;gap:4px}}
+.sig{display:grid;gap:10px}
+.sig div{font-size:14.5px}
+.sig i{color:var(--muted);font-style:normal;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px}
+
+/* speak */
+.stage{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+@media(max-width:760px){.stage{grid-template-columns:1fr}}
+.watch{text-align:center}
+.watch .digits{font-family:Fraunces,serif;font-size:72px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.bar{position:relative;height:14px;background:var(--soft);border-radius:99px;margin:16px 0 6px;overflow:visible}
+.bar .fill{height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .4s linear}
+.bar .mark{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--ok);left:60%}
+.bar .mark::after{content:"3:00";position:absolute;top:-20px;left:-12px;font-size:11px;font-weight:800;color:var(--ok)}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:700}
+.status{font-weight:800;margin:10px 0 14px;min-height:24px}
+.cuecard{background:#FFF6D9;border:1.5px solid #EED99A;border-radius:16px;padding:16px 18px;transform:rotate(-.6deg)}
+.cuecard ol{margin:6px 0 0;padding-left:20px;font-size:18px;font-weight:700;line-height:1.7}
+.cuecard .empty{color:#9A8A5A;font-weight:600;font-size:14px}
+.final{background:var(--ink);color:#fff;border-radius:18px;padding:18px 20px;margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.final .btn{background:#fff;color:var(--ink)}
+.final .btn.ghost{background:transparent;color:#fff;border-color:#fff}
+
+.compact{padding:12px 16px}
+.compact ol{display:flex;flex-wrap:wrap;gap:8px 20px;margin:0}
+.compact li{font-size:14px;align-items:center}
+.compact li::before{flex-basis:22px;height:22px;font-size:12px;margin-top:0}
+.timer.slim{padding:8px 14px;min-width:200px}
+.timer.slim .digits{font-size:32px;margin:0 0 6px}
+.lab{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;align-items:stretch}
+@media(max-width:760px){.lab{grid-template-columns:1fr}}
+.qcol{display:grid;gap:12px}
+.q{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:8px}
+.q .qh{display:flex;gap:10px;align-items:flex-start}
+.q .qn{flex:0 0 30px;height:30px;border-radius:9px;background:var(--tc);color:#fff;font-family:Fraunces,serif;font-weight:700;display:grid;place-items:center}
+.q .qt{font-weight:700;font-size:15px;line-height:1.35}
+.q .qs2{font-size:12px;color:var(--muted);margin-top:3px}
+.q .qs2 .search{font-size:12px;padding:1px 7px;margin:0}
+.q textarea{min-height:64px;height:64px;font-size:14.5px;padding:8px 12px}
+.notesbox{background:#FFF8E1;border:1.5px solid #EED99A;border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.notesbox h3{font-size:19px}
+.notesbox .hint{font-size:12.5px;color:#8A7A4A}
+.notesbox textarea{flex:1;min-height:220px;resize:none;background:#FFFDF4;border:1.5px dashed #E2CD8A;font-size:14.5px}
+.estrip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+@media(max-width:900px){.estrip{grid-template-columns:repeat(2,1fr)}}
+.ecard{background:var(--card);border:1.5px solid var(--line);border-top:4px solid var(--tc);border-radius:12px;padding:9px 11px}
+.ecard b{font-size:14px;display:block;line-height:1.25}
+.ecard .m{font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:3px}
+.ecard .ex{font-size:12.5px;font-style:italic;line-height:1.35;margin-top:4px}
+body.working header .sub,body.working .stamp,body.working header h1{display:none}
+body.working .wrap{padding-top:12px;padding-bottom:24px}
+body.working .steps{margin:8px 0 12px}
+body.working .step-btn{flex-direction:row;align-items:baseline;gap:6px;padding:6px 10px;border-radius:10px}
+body.working .step-btn .n{font-size:14px}
+body.working .step-btn .t{font-size:11px}
+@media(max-width:900px){body.working .step-btn .t{display:none}}
+[data-step="2"] .panel-head{margin-bottom:10px;align-items:center}
+[data-step="2"] h2{font-size:24px}
+[data-step="2"] .panel-head{flex-wrap:nowrap}
+[data-step="2"] .panel-head>div:first-child{flex:1;min-width:0}
+[data-step="2"] .panel-head .row{flex-wrap:nowrap}
+[data-step="2"] .compact ol{gap:6px 16px}
+[data-step="2"] .compact li{font-size:13px;white-space:nowrap}
+[data-step="2"] .qcol{gap:10px}
+@media(max-width:760px){[data-step="2"] .panel-head,[data-step="2"] .panel-head .row{flex-wrap:wrap}[data-step="2"] .compact li{white-space:normal}}
+[data-step="2"] .sub{margin-top:2px!important;font-size:14px!important}
+.timer.slim{display:flex;align-items:center;gap:12px;min-width:0;padding:8px 12px}
+.timer.slim .lbl{display:none}
+.timer.slim .digits{font-size:28px;margin:0}
+[data-step="2"] .compact{margin-bottom:10px;padding:9px 14px}
+[data-step="2"] .compact li{font-size:13.5px}
+.q{padding:9px 12px!important;gap:6px!important}
+.q textarea{min-height:48px!important;height:48px!important;padding:6px 10px!important}
+.q .qs2{display:inline;margin-left:6px}
+.estrip{margin-top:10px!important}
+.ecard{padding:7px 10px!important}
+.ecard{cursor:pointer}
+.ecard .ex{font-size:12px!important;margin-top:2px!important;display:none}
+.ecard.open .ex{display:block}
+.ecard .tap{font-size:11px;font-weight:700;color:var(--tc);margin-top:3px}
+.ecard.open .tap{display:none}
+.q textarea{min-height:44px!important;height:44px!important}
+
+#printout{display:none}
+@media print{
+  body{background:#fff}
+  .wrap{display:none}
+  #printout{display:block;padding:20px;font-size:12.5pt}
+  #printout h1{font-size:24pt;margin-bottom:4px}
+  #printout h2{font-size:15pt;margin:18px 0 6px}
+  #printout .box{border:1px solid #ccc;border-radius:8px;padding:10px 12px;white-space:pre-wrap}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Teacher Débora · Research &amp; Speak</div>
+      <h1>Ana's Research Lab</h1>
+      <p class="sub">Pick a topic, dig into it, write about it, polish it and then present it out loud. Five expressions travel with you through every stage.</p>
+    </div>
+    <div class="stamp">Write · Review · Speak</div>
+  </header>
+
+  <nav class="steps" id="steps"></nav>
+
+  <!-- 1 CHOOSE -->
+  <section class="panel" data-step="1">
+    <div class="panel-head"><div><div class="eyebrow">Step 1</div><h2>Choose your topic</h2></div></div>
+    <div class="task">
+      <ol>
+        <li><span>Read the six topics and their mission.</span></li>
+        <li><span>Look at the 5 expressions in each one. They are your mandatory ingredients for the text <i>and</i> the talk.</span></li>
+        <li><span>Choose <span class="goal">1 topic</span> you'd be happy to talk about for 5 minutes.</span></li>
+      </ol>
+    </div>
+    <div class="topics" id="topics"></div>
+  </section>
+
+  <!-- 2 RESEARCH -->
+  <section class="panel" data-step="2">
+    <div class="panel-head" style="margin-bottom:12px">
+      <div><h2 id="r-title">Research</h2><p class="sub" id="r-brief" style="margin-top:4px;font-size:14.5px"></p></div>
+      <div class="row"><div class="timer slim" id="t-research"></div><button class="btn" data-go="3">Next: write →</button></div>
+    </div>
+    <div class="task compact">
+      <ol>
+        <li><span>Start <span class="goal">15:00</span></span></li>
+        <li><span>Search online</span></li>
+        <li><span>Answer <span class="goal">3 questions</span></span></li>
+        <li><span>Save <span class="goal">2 facts</span> in Notes</span></li>
+        <li><span>Plan <span class="goal">5 expressions</span></span></li>
+      </ol>
+    </div>
+    <div class="lab">
+      <div class="qcol" id="r-qs"></div>
+      <div class="notesbox">
+        <h3>Notes</h3>
+        <div class="hint">Facts, numbers, names, sources · expression plan</div>
+        <textarea id="notes" placeholder="Fact: ...&#10;Number: ...&#10;Source: ...&#10;&#10;Expression plan:&#10;• ... → intro&#10;• ... → idea 2&#10;• ... → my opinion"></textarea>
+      </div>
+    </div>
+    <div class="estrip" id="r-expr"></div>
+  </section>
+
+  <!-- 3 WRITE -->
+  <section class="panel" data-step="3">
+    <div class="tracker"><div class="topicline" id="w-topic"></div><div class="chips" id="w-track"></div></div>
+    <div class="panel-head">
+      <div><div class="eyebrow">Step 3 · Final text</div><h2>Write it up</h2></div>
+      <div class="timer" id="t-write"></div>
+    </div>
+    <div class="task">
+      <ol>
+        <li><span>Start the timer: <span class="goal">5:00</span></span></li>
+        <li><span>Turn your notes into your final text: <span class="goal">120–170 words</span></span></li>
+        <li><span>Use <span class="goal">all 5 expressions</span>. Each one turns green when the page finds it.</span></li>
+        <li><span>Structure: introduction → <span class="goal">2–3 main ideas</span> → your opinion.</span></li>
+        <li><span>When the timer ends, stop writing. This is <b>version 1</b>.</span></li>
+      </ol>
+    </div>
+    <div class="grid2">
+      <div>
+        <textarea id="draft" style="min-height:380px" placeholder="Start writing here..."></textarea>
+        <div class="meta"><span id="w-count">0 words</span><span id="w-expr">0/5 expressions</span></div>
+      </div>
+      <div class="card">
+        <h3>Your notes</h3>
+        <div class="readtext" id="w-notes" style="max-height:380px;overflow:auto;font-size:14px"></div>
+      </div>
+    </div>
+    <div class="next"><button class="btn" data-go="4">Next: review my text →</button></div>
+  </section>
+
+  <!-- 4 REVIEW -->
+  <section class="panel" data-step="4">
+    <div class="tracker"><div class="topicline" id="v-topic"></div><div class="chips" id="v-track"></div></div>
+    <div class="panel-head"><div><div class="eyebrow">Step 4 · Self-review</div><h2>Be your own editor</h2></div></div>
+    <div class="task">
+      <ol>
+        <li><span>Read version 1 <b>out loud</b> once.</span></li>
+        <li><span>Check it with the review lens.</span></li>
+        <li><span>Write exactly <span class="goal">2 improvement points</span>: what you noticed + how you'll fix it.</span></li>
+        <li><span>Rewrite the text applying <span class="goal">both points</span>. This is <b>version 2</b>, the base for your talk.</span></li>
+      </ol>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Version 1</h3>
+        <div class="readtext" id="v1"></div>
+        <div class="meta"><span id="v1-count"></span><span>Green = expression found</span></div>
+      </div>
+      <div class="card">
+        <h3>Review lens</h3>
+        <ul class="lens">
+          <li>Are the 5 expressions in a natural context, or just dropped in?</li>
+          <li>Is the structure clear: intro, ideas, opinion?</li>
+          <li>Do I repeat the same words (very, good, thing, people, nice)?</li>
+          <li>Are my connectors varied (however, on top of that, that's why, even so)?</li>
+          <li>Are the verb tenses consistent: past for what happened, present for my opinion?</li>
+          <li>Is there at least one fact or number from my research?</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card imp">
+        <span class="tag">Improvement 1</span>
+        <label for="i1a">What I noticed</label><input type="text" id="i1a" placeholder="e.g. I used 'very' four times">
+        <label for="i1b">How I'll fix it</label><input type="text" id="i1b" placeholder="e.g. swap for really / incredibly / or a stronger adjective">
+      </div>
+      <div class="card imp">
+        <span class="tag">Improvement 2</span>
+        <label for="i2a">What I noticed</label><input type="text" id="i2a" placeholder="e.g. my opinion only appears in the last line">
+        <label for="i2b">How I'll fix it</label><input type="text" id="i2b" placeholder="e.g. add a clear opinion sentence to the intro">
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="row" style="justify-content:space-between;margin-bottom:10px"><h3>Version 2</h3><button class="btn soft" id="copyv1">Paste version 1 here to edit</button></div>
+      <textarea id="revised" style="min-height:300px" placeholder="Your improved text..."></textarea>
+      <div class="meta"><span id="r2-count">0 words</span><span id="r2-expr">0/5 expressions</span></div>
+    </div>
+    <div class="next"><button class="btn" data-go="5">Next: prepare my talk →</button></div>
+  </section>
+
+  <!-- 5 PREPARE -->
+  <section class="panel" data-step="5">
+    <div class="tracker"><div class="topicline" id="p-topic"></div><div class="chips" id="p-track"></div></div>
+    <div class="panel-head">
+      <div><div class="eyebrow">Step 5 · Prep time</div><h2>Build your cue card</h2></div>
+      <div class="timer" id="t-prep"></div>
+    </div>
+    <div class="task">
+      <ol>
+        <li><span>Start the timer: <span class="goal">10:00</span></span></li>
+        <li><span>Fill in the cue card: <span class="goal">5 lines</span>, maximum <span class="goal">6 words</span> per line.</span></li>
+        <li><span>Choose <span class="goal">1 opening</span> and <span class="goal">1 closing</span> signpost.</span></li>
+        <li><span>Say your opening out loud <span class="goal">2 times</span>.</span></li>
+        <li><span>Talk from the cue card. Your text stays closed during the talk.</span></li>
+      </ol>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Cue card</h3>
+        <div class="cue">
+          <div class="r"><span>Hook</span><input type="text" id="c1" placeholder="a question, a fact, a quick story"></div>
+          <div class="r"><span>Idea 1</span><input type="text" id="c2" placeholder="keywords + expression"></div>
+          <div class="r"><span>Idea 2</span><input type="text" id="c3" placeholder="keywords + expression"></div>
+          <div class="r"><span>Idea 3</span><input type="text" id="c4" placeholder="keywords + expression"></div>
+          <div class="r"><span>My opinion</span><input type="text" id="c5" placeholder="what I really think"></div>
+        </div>
+        <details style="margin-top:14px"><summary style="cursor:pointer;font-weight:700">Peek at version 2</summary><div class="readtext" id="p-v2" style="margin-top:10px;font-size:14px"></div></details>
+      </div>
+      <div class="card">
+        <h3>Signposts</h3>
+        <div class="sig">
+          <div><i>Opening</i>So, today I want to talk about… · Have you ever wondered why…? · Let me start with a quick story.</div>
+          <div><i>Moving on</i>Here's the thing… · What surprised me most was… · On top of that… · Now, this is where it gets interesting…</div>
+          <div><i>Adding a fact</i>According to… · I read that… · Believe it or not…</div>
+          <div><i>Closing</i>So, to wrap up… · If you ask me… · At the end of the day…</div>
+        </div>
+      </div>
+    </div>
+    <div class="next"><button class="btn" data-go="6">Next: it's showtime →</button></div>
+  </section>
+
+  <!-- 6 SPEAK -->
+  <section class="panel" data-step="6">
+    <div class="panel-head"><div><div class="eyebrow">Step 6 · Presentation</div><h2>Your stage</h2></div></div>
+    <div class="task">
+      <ol>
+        <li><span>Start the stopwatch and begin.</span></li>
+        <li><span>Speak for <span class="goal">3–5 minutes</span>.</span></li>
+        <li><span>Use <span class="goal">all 5 expressions</span>. Tap each one as you say it.</span></li>
+        <li><span>Look only at the cue card.</span></li>
+        <li><span>Finish with <span class="goal">1 clear opinion</span>.</span></li>
+      </ol>
+    </div>
+    <div class="stage">
+      <div class="card watch">
+        <div class="mini" style="margin-top:0">Stopwatch</div>
+        <div class="digits" id="sw">0:00</div>
+        <div class="bar"><div class="fill" id="sw-fill"></div><div class="mark"></div></div>
+        <div class="scale"><span>0:00</span><span>5:00</span></div>
+        <div class="status" id="sw-status">Ready when you are.</div>
+        <div class="row" style="justify-content:center">
+          <button class="btn" id="sw-start">Start</button>
+          <button class="btn ghost" id="sw-reset">Reset</button>
+        </div>
+        <div class="mini">Expressions said (tap)</div>
+        <div class="chips" id="s-track" style="justify-content:center"></div>
+      </div>
+      <div class="cuecard">
+        <div class="mini" style="margin-top:0;color:#9A8A5A">Cue card</div>
+        <div id="s-cue"></div>
+      </div>
+    </div>
+    <div class="final">
+      <div><b>All done!</b> Save your work for feedback.</div>
+      <div class="row"><button class="btn" id="dl">Download my work</button><button class="btn ghost" id="pr">Print / PDF</button></div>
+    </div>
+  </section>
+</div>
+
+<div id="printout"></div>
+
+<script>
+const TOPICS=[
+{id:"trip",c:"#E5735A",title:"The Trip That Changed Me",
+ brief:"Research a place you've visited or dream of visiting and convince everyone to put it on their list.",
+ qs:[{q:"What makes this place special? What can you see and do there?",s:"[place] best things to do"},
+     {q:"When is the best time to go, and how much does a trip cost?",s:"[place] travel on a budget"},
+     {q:"What's a surprising fact or secret spot tourists don't know?",s:"[place] hidden gems"}],
+ expr:[
+  {p:"fall in love with",m:"to start loving a place or a person very much",ex:"I fell in love with Salvador on my first day there.",re:/\b(fall|falls|fell|fallen|falling)\s+in\s+love\s+with\b/i},
+  {p:"on a budget",m:"spending as little money as possible",ex:"We travelled on a budget: hostels, buses and street food.",re:/\bon\s+a\s+(tight\s+|small\s+|low\s+)?budget\b/i},
+  {p:"a hidden gem",m:"a great place that not many people know about",ex:"This little café is a hidden gem. Only locals go there.",re:/\bhidden\s+gems?\b/i},
+  {p:"worth it",m:"good enough to justify the money, time or effort",ex:"The hike was really hard, but the view was totally worth it.",re:/\bworth\s+it\b/i},
+  {p:"once in a lifetime",m:"so special that it may happen only one time in your life",ex:"Seeing the northern lights was a once-in-a-lifetime experience.",re:/\bonce[\s-]in[\s-]a[\s-]lifetime\b/i}]},
+{id:"over",c:"#2F8F89",title:"Too Many Tourists?",
+ brief:"Research a place with too many tourists (Venice, Barcelona, Rio, Fernando de Noronha…) and decide whose side you're on.",
+ qs:[{q:"What is happening there, and what has the city done about it?",s:"overtourism [city] 2026"},
+     {q:"What good and bad things does tourism bring to the people who live there?",s:"[city] residents tourists problems"},
+     {q:"What can tourists do differently? What's your opinion?",s:"how to be a responsible tourist"}],
+ expr:[
+  {p:"packed with",m:"very full of people or things",ex:"In July, the old town is packed with tourists from morning to night.",re:/\bpacked\s+with\b/i},
+  {p:"a rip-off",m:"something that costs much more than it should",ex:"Fifteen euros for a sandwich? That's a rip-off!",re:/\brip[\s-]?offs?\b|\bripped\s+off\b/i},
+  {p:"pros and cons",m:"the good points and the bad points",ex:"Tourism has pros and cons: more jobs, but also more noise and traffic.",re:/\bpros\s+and\s+cons\b/i},
+  {p:"go up",m:"to increase (prices, numbers, rent)",ex:"Rents went up so much that many locals had to move out.",re:/\b(go|goes|went|gone|going)\s+up\b/i},
+  {p:"find a balance",m:"to find a fair middle point between two things",ex:"The city needs to find a balance between tourists and residents.",re:/\b(find|finds|found|finding|strike|struck)\s+a\s+(\w+\s+)?balance\b/i}]},
+{id:"tea",c:"#8A4F7D",title:"Spill the Tea: Celebrity Drama",
+ brief:"Pick a recent celebrity fight, breakup or scandal, find out what really happened and give your verdict.",
+ qs:[{q:"What happened? Tell the story in order: first, then, after that.",s:"[name] drama explained"},
+     {q:"What did each person say or post about it?",s:"[name] statement interview"},
+     {q:"Was the internet fair? Whose side are you on?",s:"[name] fans reaction"}],
+ expr:[
+  {p:"spill the tea",m:"to tell the gossip, with all the details",ex:"Sit down, I'm going to spill the tea about the awards party.",re:/\bspill(s|ed|ing|t)?\s+(the|some|all\s+the)\s+tea\b/i},
+  {p:"break up",m:"to end a romantic relationship",ex:"They broke up after five years, and nobody knows why.",re:/\b(break|breaks|broke|broken|breaking)\s+up\b|\bbreak[\s-]?ups?\b/i},
+  {p:"out of nowhere",m:"suddenly, with no warning",ex:"Out of nowhere, she deleted all his photos from her profile.",re:/\bout\s+of\s+nowhere\b/i},
+  {p:"make a big deal out of",m:"to treat something as more serious than it really is",ex:"It was one comment! The fans made a big deal out of nothing.",re:/\b(make|makes|made|making)\s+(such\s+)?a\s+(big|huge)\s+deal\b/i},
+  {p:"take sides",m:"to support one person in a fight or argument",ex:"Everybody online took sides in less than an hour.",re:/\b(take|takes|took|taken|taking)\s+sides\b/i}]},
+{id:"dating",c:"#D2577E",title:"Dating in the App Era",
+ brief:"Research how dating apps and social media changed the way young people date, and share your opinion.",
+ qs:[{q:"How do young people meet and date today?",s:"gen z dating apps 2026"},
+     {q:"What is ghosting, and why do so many people do it?",s:"why people ghost"},
+     {q:"What's a red flag for you? And a green flag?",s:"dating red flags green flags"}],
+ expr:[
+  {p:"ask someone out",m:"to invite someone on a date",ex:"He finally asked her out after three months of messages.",re:/\b(ask|asks|asked|asking)\s+(\w+\s+){1,2}out\b/i},
+  {p:"leave someone on read",m:"to see a message and not answer it",ex:"She left me on read for two days and then sent a meme!",re:/\b(leave|leaves|left|leaving)\s+(\w+\s+){1,2}on\s+read\b/i},
+  {p:"ghost someone",m:"to stop talking to someone suddenly, with no explanation",ex:"They went on three dates, and then he ghosted her.",re:/\bghost(s|ed|ing)\b|\bghost\s+(him|her|them|me|you|someone|people)\b/i},
+  {p:"a red flag",m:"a sign that something is wrong or dangerous",ex:"If he's rude to the waiter, that's a big red flag.",re:/\bred\s+flags?\b/i},
+  {p:"move on",m:"to stop thinking about the past and continue your life",ex:"It was hard, but after a few months she moved on.",re:/\b(move|moves|moved|moving)\s+on\b/i}]},
+{id:"uni",c:"#E2A93B",title:"Is University Worth It?",
+ brief:"Research the debate about degrees, skills and AI in the job market, and compare it with your own life at uni.",
+ qs:[{q:"Do companies care more about a degree or about skills today?",s:"degree vs skills employers 2026"},
+     {q:"How is AI changing jobs for young people?",s:"AI jobs young graduates"},
+     {q:"What has uni given you that an online course can't?",s:"benefits of university life"}],
+ expr:[
+  {p:"pull an all-nighter",m:"to stay awake all night to study or work",ex:"I pulled an all-nighter before the exam and almost fell asleep during it.",re:/\b(pull|pulls|pulled|pulling)\s+(an\s+|some\s+)?all[\s-]?nighters?\b/i},
+  {p:"stressed out",m:"very worried and nervous",ex:"Everybody gets stressed out at the end of the semester.",re:/\bstress(ed|es|ing)?\s+out\b|\bstressed\b/i},
+  {p:"figure out",m:"to understand something or find the answer",ex:"I'm still trying to figure out what I want to do after uni.",re:/\b(figure|figures|figured|figuring)\s+(\w+\s+){0,4}out\b/i},
+  {p:"pay off",m:"to bring good results after a lot of effort",ex:"All those hours of study really paid off.",re:/\b(pay|pays|paid|paying)\s+off\b/i},
+  {p:"in the long run",m:"after a long time, in the future",ex:"A degree is expensive, but in the long run it can open doors.",re:/\bin\s+the\s+long\s+run\b/i}]},
+{id:"abroad",c:"#5B8DD6",title:"Moving Abroad",
+ brief:"Research a country young Brazilians love moving to (Portugal, Ireland, Canada, Australia…) and decide if you'd go.",
+ qs:[{q:"Why do so many young Brazilians choose this country?",s:"Brazilians living in [country]"},
+     {q:"What's life like there: cost of living, jobs, weather, culture?",s:"cost of living [country] students"},
+     {q:"Would you go? What would you miss most about Brazil?",s:"[country] culture shock Brazilians"}],
+ expr:[
+  {p:"move abroad",m:"to go and live in another country",ex:"My cousin moved abroad last year and now lives in Dublin.",re:/\b(move|moves|moved|moving)\s+abroad\b/i},
+  {p:"get used to",m:"to become familiar with something new until it feels normal",ex:"It took me months to get used to the cold weather.",re:/\b(get|gets|got|gotten|getting)\s+used\s+to\b/i},
+  {p:"feel homesick",m:"to miss your home, family and friends",ex:"I felt homesick when I smelled pão de queijo in Lisbon.",re:/\bhomesick(ness)?\b/i},
+  {p:"a fresh start",m:"a new beginning",ex:"For many people, a new country is a fresh start.",re:/\bfresh\s+start\b/i},
+  {p:"step out of your comfort zone",m:"to do something new that feels scary",ex:"Living alone abroad made me step out of my comfort zone.",re:/\b(step|steps|stepped|stepping|get|got|go|went)\s+out\s+of\s+(my|your|his|her|our|their|the)\s+comfort\s+zones?\b/i}]}
+];
+
+const STEPS=[["Choose","pick 1"],["Research","15 min"],["Write","5 min"],["Review","2 points"],["Prepare","10 min"],["Speak","3–5 min"]];
+const KEY="ana-research-speak-v1";
+let S={topic:null,step:1,q1:"",q2:"",q3:"",notes:"",draft:"",revised:"",i1a:"",i1b:"",i2a:"",i2b:"",c1:"",c2:"",c3:"",c4:"",c5:"",said:[]};
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const topic=()=>TOPICS.find(t=>t.id===S.topic);
+const words=s=>(s.trim().match(/\S+/g)||[]).length;
+const hits=s=>topic()?topic().expr.map(e=>e.re.test(s)):[];
+
+/* nav */
+function renderNav(){
+  $("steps").innerHTML=STEPS.map((s,i)=>`<button class="step-btn ${S.step===i+1?"on":""} ${S.step>i+1?"done":""}" data-go="${i+1}"><span class="n">0${i+1}</span><span class="l">${s[0]}</span><span class="t">${s[1]}</span></button>`).join("");
+}
+function go(n){
+  if(n>1&&!S.topic){alert("Choose your topic first 🙂");n=1;}
+  S.step=n;save();document.body.classList.toggle("working",n>1);
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",+p.dataset.step===n));
+  renderNav();refresh();window.scrollTo({top:0,behavior:"smooth"});
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)go(+b.dataset.go);});
+
+/* topics */
+function renderTopics(){
+  $("topics").innerHTML=TOPICS.map((t,i)=>`<article class="topic ${S.topic===t.id?"sel":""}" style="--c:${t.c}">
+    <div class="band"></div><div class="body">
+    <div class="num">Topic 0${i+1}</div><h3>${t.title}</h3><p>${t.brief}</p>
+    <div class="chips">${t.expr.map(e=>`<span class="chip">${e.p}</span>`).join("")}</div>
+    <button class="btn" data-pick="${t.id}" style="${S.topic===t.id?`background:${t.c}`:""}">${S.topic===t.id?"✓ My topic":"Choose this topic"}</button>
+    </div></article>`).join("");
+}
+$("topics").addEventListener("click",e=>{const b=e.target.closest("[data-pick]");if(!b)return;
+  if(S.topic&&S.topic!==b.dataset.pick&&(S.draft||S.notes)&&!confirm("Change topic? Your notes and text stay, but the expressions will change."))return;
+  S.topic=b.dataset.pick;S.said=[];save();renderTopics();renderTopic();go(2);});
+
+function renderTopic(){
+  const t=topic();if(!t)return;
+  $("r-title").textContent=t.title;$("r-brief").textContent=t.brief;
+  document.querySelector('[data-step="2"]').style.setProperty("--tc",t.c);
+  $("r-qs").innerHTML=t.qs.map((x,i)=>`<div class="q"><div class="qh"><div class="qn">${i+1}</div><div><div class="qt">${x.q}</div><div class="qs2" style="display:block;margin:2px 0 0">Try searching: <span class="search">${esc(x.s)}</span></div></div></div><textarea id="q${i+1}" placeholder="Keywords...">${esc(S["q"+(i+1)]||"")}</textarea></div>`).join("");
+  $("r-expr").innerHTML=t.expr.map(e=>`<div class="ecard"><b>${e.p}</b><div class="m">${e.m}</div><div class="tap">tap for example</div><div class="ex">${esc(e.ex)}</div></div>`).join("");
+  ["w","v","p"].forEach(k=>$(k+"-topic").innerHTML=`Topic: <b>${t.title}</b>`);
+}
+
+function track(id,text){
+  const t=topic();if(!t)return 0;const h=hits(text);
+  $(id).innerHTML=t.expr.map((e,i)=>`<span class="tchip ${h[i]?"hit":""}">${e.p}</span>`).join("");
+  return h.filter(Boolean).length;
+}
+function highlight(text){
+  const t=topic();if(!t||!text)return esc(text||"");
+  const ranges=[];
+  t.expr.forEach(e=>{const r=new RegExp(e.re.source,"gi");let m;while((m=r.exec(text))){ranges.push([m.index,m.index+m[0].length]);if(!m[0].length)r.lastIndex++;}});
+  ranges.sort((a,b)=>a[0]-b[0]);let out="",pos=0;
+  ranges.forEach(([a,b])=>{if(a<pos)return;out+=esc(text.slice(pos,a))+"<mark>"+esc(text.slice(a,b))+"</mark>";pos=b;});
+  return out+esc(text.slice(pos));
+}
+function countLine(el,n,min,max){
+  const ok=n>=min&&n<=max;$(el).innerHTML=`<span class="${ok?"good":""}">${n} words</span> · target ${min}–${max}`;
+}
+
+function refresh(){
+  if(!topic())return;
+  const n1=track("w-track",S.draft);countLine("w-count",words(S.draft),120,170);
+  $("w-expr").innerHTML=`<span class="${n1===5?"good":""}">${n1}/5 expressions</span>`;
+  $("w-notes").textContent=researchText()||"(no notes yet)";
+  track("v-track",S.revised||S.draft);
+  $("v1").innerHTML=S.draft?highlight(S.draft):"<span style='color:var(--muted)'>Your version 1 will appear here.</span>";
+  $("v1-count").textContent=words(S.draft)+" words";
+  const n2=track("r2-track-dummy",S.revised);
+  const h2=hits(S.revised).filter(Boolean).length;
+  countLine("r2-count",words(S.revised),120,170);
+  $("r2-expr").innerHTML=`<span class="${h2===5?"good":""}">${h2}/5 expressions</span>`;
+  track("p-track",S.revised||S.draft);
+  $("p-v2").innerHTML=highlight(S.revised||S.draft)||"(empty)";
+  const t=topic();
+  $("s-track").innerHTML=t.expr.map((e,i)=>`<button class="tchip ${S.said.includes(i)?"hit":""}" data-said="${i}">${e.p}</button>`).join("");
+  const cue=[S.c1,S.c2,S.c3,S.c4,S.c5].filter(x=>x.trim());
+  $("s-cue").innerHTML=cue.length?`<ol>${cue.map(c=>`<li>${esc(c)}</li>`).join("")}</ol>`:`<div class="empty">Fill in your cue card in Step 5.</div>`;
+}
+document.body.insertAdjacentHTML("beforeend","<div id='r2-track-dummy' hidden></div>");
+$("s-track").addEventListener("click",e=>{const b=e.target.closest("[data-said]");if(!b)return;const i=+b.dataset.said;
+  S.said=S.said.includes(i)?S.said.filter(x=>x!==i):[...S.said,i];save();refresh();});
+
+["notes","draft","revised","i1a","i1b","i2a","i2b","c1","c2","c3","c4","c5"].forEach(k=>{
+  const el=$(k);el.value=S[k]||"";el.addEventListener("input",()=>{S[k]=el.value;save();refresh();});
+});
+$("copyv1").onclick=()=>{if(S.revised&&!confirm("Replace version 2 with version 1?"))return;S.revised=S.draft;$("revised").value=S.draft;save();refresh();};
+
+/* sound */
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.35,.7].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.0001,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.3,a.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+t+.28);o.start(a.currentTime+t);o.stop(a.currentTime+t+.3);});}catch(e){}}
+const fmt=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+
+/* countdowns */
+function countdown(id,label,secs){
+  const el=$(id);let left=secs,iv=null,endAt=0;
+  el.innerHTML=`<div class="lbl">${label}</div><div class="digits">${fmt(secs)}</div><div class="row"><button class="btn" data-a="go">Start</button><button class="btn ghost" data-a="reset">Reset</button></div>`;
+  const d=el.querySelector(".digits"),b=el.querySelector("[data-a=go]");
+  const tick=()=>{left=Math.max(0,Math.ceil((endAt-Date.now())/1000));d.textContent=fmt(left);
+    if(left===0){clearInterval(iv);iv=null;b.textContent="Done";el.classList.add("end");beep();}};
+  el.addEventListener("click",e=>{const a=e.target.dataset.a;if(!a)return;
+    if(a==="go"){if(left===0)return;if(iv){clearInterval(iv);iv=null;b.textContent="Resume";}
+      else{endAt=Date.now()+left*1000;iv=setInterval(tick,250);b.textContent="Pause";}}
+    if(a==="reset"){clearInterval(iv);iv=null;left=secs;d.textContent=fmt(secs);b.textContent="Start";el.classList.remove("end");}
+  });
+}
+countdown("t-research","Research &amp; notes",900);
+countdown("t-write","Final text",300);
+countdown("t-prep","Prep time",600);
+
+/* stopwatch */
+(function(){let start=0,acc=0,iv=null,warned3=false,warned5=false;
+  const d=$("sw"),f=$("sw-fill"),st=$("sw-status"),b=$("sw-start");
+  const draw=()=>{const s=(acc+(iv?Date.now()-start:0))/1000;d.textContent=fmt(s);f.style.width=Math.min(100,s/300*100)+"%";
+    if(s<180){st.textContent=s<1?"Ready when you are.":"Keep going: the minimum is 3:00.";st.style.color="var(--ink)";f.style.background="var(--accent)";}
+    else if(s<300){st.textContent="✓ You're in the zone. Wrap up whenever you're ready.";st.style.color="var(--ok)";f.style.background="var(--ok)";if(!warned3){warned3=true;}}
+    else{st.textContent="5:00. Time to finish your last sentence.";st.style.color="var(--warn)";f.style.background="var(--warn)";if(!warned5){warned5=true;beep();}}};
+  b.onclick=()=>{if(iv){acc+=Date.now()-start;clearInterval(iv);iv=null;b.textContent="Resume";}else{start=Date.now();iv=setInterval(draw,250);b.textContent="Pause";}draw();};
+  $("sw-reset").onclick=()=>{clearInterval(iv);iv=null;acc=0;warned3=warned5=false;b.textContent="Start";draw();};
+  window._swTime=()=>fmt((acc+(iv?Date.now()-start:0))/1000);
+})();
+
+function researchText(){const t=topic();if(!t)return S.notes;
+  const parts=t.qs.map((x,i)=>S["q"+(i+1)]?`Q${i+1}. ${x.q}\n${S["q"+(i+1)]}`:"").filter(Boolean);
+  if(S.notes)parts.push("NOTES\n"+S.notes);return parts.join("\n\n");}
+$("r-expr").addEventListener("click",e=>{const c=e.target.closest(".ecard");if(c)c.classList.toggle("open");});
+$("r-qs").addEventListener("input",e=>{if(/^q[123]$/.test(e.target.id)){S[e.target.id]=e.target.value;save();refresh();}});
+
+/* export */
+function summaryText(){const t=topic();
+  return `ANA · RESEARCH & SPEAK
+Topic: ${t?t.title:"-"}
+Expressions: ${t?t.expr.map(e=>e.p).join(" · "):"-"}
+
+— RESEARCH —
+${researchText()||"-"}
+
+— VERSION 1 (${words(S.draft)} words) —
+${S.draft||"-"}
+
+— IMPROVEMENT 1 —
+Noticed: ${S.i1a||"-"}
+Fix: ${S.i1b||"-"}
+
+— IMPROVEMENT 2 —
+Noticed: ${S.i2a||"-"}
+Fix: ${S.i2b||"-"}
+
+— VERSION 2 (${words(S.revised)} words) —
+${S.revised||"-"}
+
+— CUE CARD —
+Hook: ${S.c1||"-"}
+Idea 1: ${S.c2||"-"}
+Idea 2: ${S.c3||"-"}
+Idea 3: ${S.c4||"-"}
+My opinion: ${S.c5||"-"}
+
+— TALK —
+Time: ${window._swTime()}
+Expressions said: ${t?S.said.map(i=>t.expr[i].p).join(", ")||"-":"-"}
+`;}
+$("dl").onclick=()=>{const blob=new Blob([summaryText()],{type:"text/plain"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ana-research-and-speak.txt";a.click();};
+$("pr").onclick=()=>{const t=topic();
+  $("printout").innerHTML=`<h1>Ana · Research &amp; Speak</h1><div>${t?esc(t.title):""} — ${t?t.expr.map(e=>esc(e.p)).join(" · "):""}</div>
+  <h2>Version 1 (${words(S.draft)} words)</h2><div class="box">${highlight(S.draft)}</div>
+  <h2>Improvement points</h2><div class="box">1. ${esc(S.i1a)} → ${esc(S.i1b)}\n2. ${esc(S.i2a)} → ${esc(S.i2b)}</div>
+  <h2>Version 2 (${words(S.revised)} words)</h2><div class="box">${highlight(S.revised)}</div>
+  <h2>Cue card</h2><div class="box">${[S.c1,S.c2,S.c3,S.c4,S.c5].map(esc).join("\n")}</div>
+  <h2>Talk</h2><div class="box">Time: ${window._swTime()}\nExpressions said: ${t?S.said.map(i=>esc(t.expr[i].p)).join(", "):""}</div>`;
+  window.print();};
+
+renderTopics();renderTopic();go(S.topic?S.step:1);
+</script>
+</body>
+</html>
